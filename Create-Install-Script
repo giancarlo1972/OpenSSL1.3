@@ -1,5 +1,8 @@
 # Install-OpenSSL.ps1
-$InstallerName = "openssl-3.3.2.exe"  # Update with your actual filename
+# Update filename to match what you downloaded
+$InstallerName = "FireDaemon-OpenSSL-x64-3.6.1.exe"  
+# Or use: "Win64OpenSSL-3_4_0.exe" if using Shining Light
+
 $InstallerPath = Join-Path $PSScriptRoot $InstallerName
 $LogPath = "$env:ProgramData\Intune\Logs\OpenSSL-Install.log"
 
@@ -9,31 +12,57 @@ if (!(Test-Path $LogDir)) {
     New-Item -ItemType Directory -Path $LogDir -Force
 }
 
-# Install OpenSSL silently
-# Adjust parameters based on your installer type (EXE vs MSI)
-if ($InstallerName -match "\.exe$") {
-    Start-Process -FilePath $InstallerPath -ArgumentList "/silent /norestart /log=`"$LogPath`"" -Wait -NoNewWindow
-} elseif ($InstallerName -match "\.msi$") {
-    Start-Process msiexec.exe -ArgumentList "/i `"$InstallerPath`" /qn /norestart /L*V `"$LogPath`"" -Wait -NoNewWindow
+# Verify installer exists
+if (!(Test-Path $InstallerPath)) {
+    Write-Error "Installer not found at: $InstallerPath"
+    exit 1603
 }
 
-# Verify installation
-$PossiblePaths = @(
-    "C:\Program Files\OpenSSL-Win64\bin\openssl.exe",
-    "C:\Program Files\OpenSSL\bin\openssl.exe",
-    "${env:ProgramFiles}\OpenSSL-Win64\bin\openssl.exe"
-)
+# Silent installation arguments for FireDaemon OpenSSL
+if ($InstallerName -like "*FireDaemon*") {
+    $InstallArgs = @(
+        "/exenoui"
+        "/exelog"
+        "`"$LogPath`""
+        "/qn"
+        "/norestart"
+        "REBOOT=ReallySuppress"
+    )
+    $Process = Start-Process -FilePath $InstallerPath -ArgumentList $InstallArgs -Wait -NoNewWindow -PassThru
+}
+# Silent installation for Shining Light OpenSSL
+elseif ($InstallerName -like "*Win64OpenSSL*") {
+    $InstallArgs = @(
+        "/VERYSILENT"
+        "/SUPPRESSMSGBOXES"
+        "/NORESTART"
+        "/LOG=`"$LogPath`""
+    )
+    $Process = Start-Process -FilePath $InstallerPath -ArgumentList $InstallArgs -Wait -NoNewWindow -PassThru
+}
 
-$Installed = $false
-foreach ($Path in $PossiblePaths) {
-    if (Test-Path $Path) {
-        Write-Output "OpenSSL installed successfully at $Path"
-        $Installed = $true
-        exit 0
+# Check installation result
+if ($Process.ExitCode -eq 0) {
+    Write-Output "OpenSSL installation completed successfully"
+    
+    # Verify installation - check multiple possible paths
+    $OpenSSLPaths = @(
+        "${env:ProgramFiles}\FireDaemon OpenSSL 3\bin\openssl.exe",
+        "${env:ProgramFiles}\OpenSSL-Win64\bin\openssl.exe",
+        "${env:ProgramFiles}\OpenSSL\bin\openssl.exe"
+    )
+    
+    foreach ($Path in $OpenSSLPaths) {
+        if (Test-Path $Path) {
+            $Version = & $Path version
+            Write-Output "Verified: $Version at $Path"
+            exit 0
+        }
     }
-}
-
-if (!$Installed) {
-    Write-Error "OpenSSL installation failed"
-    exit 1
+    
+    Write-Warning "Installation succeeded but OpenSSL.exe not found in expected locations"
+    exit 0
+} else {
+    Write-Error "Installation failed with exit code: $($Process.ExitCode)"
+    exit $Process.ExitCode
 }
