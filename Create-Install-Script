@@ -1,0 +1,39 @@
+# Install-OpenSSL.ps1
+$InstallerName = "openssl-3.3.2.exe"  # Update with your actual filename
+$InstallerPath = Join-Path $PSScriptRoot $InstallerName
+$LogPath = "$env:ProgramData\Intune\Logs\OpenSSL-Install.log"
+
+# Create log directory
+$LogDir = Split-Path $LogPath
+if (!(Test-Path $LogDir)) {
+    New-Item -ItemType Directory -Path $LogDir -Force
+}
+
+# Install OpenSSL silently
+# Adjust parameters based on your installer type (EXE vs MSI)
+if ($InstallerName -match "\.exe$") {
+    Start-Process -FilePath $InstallerPath -ArgumentList "/silent /norestart /log=`"$LogPath`"" -Wait -NoNewWindow
+} elseif ($InstallerName -match "\.msi$") {
+    Start-Process msiexec.exe -ArgumentList "/i `"$InstallerPath`" /qn /norestart /L*V `"$LogPath`"" -Wait -NoNewWindow
+}
+
+# Verify installation
+$PossiblePaths = @(
+    "C:\Program Files\OpenSSL-Win64\bin\openssl.exe",
+    "C:\Program Files\OpenSSL\bin\openssl.exe",
+    "${env:ProgramFiles}\OpenSSL-Win64\bin\openssl.exe"
+)
+
+$Installed = $false
+foreach ($Path in $PossiblePaths) {
+    if (Test-Path $Path) {
+        Write-Output "OpenSSL installed successfully at $Path"
+        $Installed = $true
+        exit 0
+    }
+}
+
+if (!$Installed) {
+    Write-Error "OpenSSL installation failed"
+    exit 1
+}
