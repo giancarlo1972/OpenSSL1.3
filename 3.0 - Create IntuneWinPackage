@@ -1,0 +1,2 @@
+cd C:\Intune\OpenSSL\Tools
+.\IntuneWinAppUtil.exe -c "C:\Intune\OpenSSL\Source" -s "Install-OpenSSL.ps1" -o "C:\Intune\OpenSSL\Output"
