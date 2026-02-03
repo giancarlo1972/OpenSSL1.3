@@ -1,0 +1,22 @@
+# Verify all paths exist
+# modify the downloaded file name - change it accordingly
+# Downloaded File Name: FireDaemon-OpenSSL-x64-3.6.1.exe
+Write-Host "Checking paths..." -ForegroundColor Cyan
+
+$Checks = @{
+    "Tool exists" = Test-Path "C:\Intune\OpenSSL\Tools\IntuneWinAppUtil.exe"
+    "Source folder exists" = Test-Path "C:\Intune\OpenSSL\Source"
+    "Install script exists" = Test-Path "C:\Intune\OpenSSL\Source\Install-OpenSSL.ps1"
+    "Output folder exists" = Test-Path "C:\Intune\OpenSSL\Output"
+    "Installer exists" = Test-Path "C:\Intune\OpenSSL\Source\FireDaemon-OpenSSL-x64-3.6.1.exe"
+}
+
+foreach ($Check in $Checks.GetEnumerator()) {
+    $Status = if ($Check.Value) { "✓ OK" } else { "✗ MISSING" }
+    $Color = if ($Check.Value) { "Green" } else { "Red" }
+    Write-Host "$($Check.Key): $Status" -ForegroundColor $Color
+}
+
+# Show what files are in Source
+Write-Host "`nFiles in Source folder:" -ForegroundColor Cyan
+Get-ChildItem C:\Intune\OpenSSL\Source | Select-Object Name
