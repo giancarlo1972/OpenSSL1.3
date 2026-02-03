@@ -1,0 +1,17 @@
+# Run as Administrator
+# Complete Intune OpenSSL Package Setup
+
+# Create directories
+New-Item -Path "C:\Intune\OpenSSL\Source" -ItemType Directory -Force
+New-Item -Path "C:\Intune\OpenSSL\Output" -ItemType Directory -Force
+New-Item -Path "C:\Intune\OpenSSL\Tools" -ItemType Directory -Force
+
+# Download IntuneWinAppUtil
+Write-Host "Downloading IntuneWinAppUtil..." -ForegroundColor Cyan
+Invoke-WebRequest -Uri "https://github.com/Microsoft/Microsoft-Win32-Content-Prep-Tool/raw/master/IntuneWinAppUtil.exe" -OutFile "C:\Intune\OpenSSL\Tools\IntuneWinAppUtil.exe"
+
+Write-Host "`nSetup complete!" -ForegroundColor Green
+Write-Host "Next steps:" -ForegroundColor Yellow
+Write-Host "1. Place your OpenSSL installer in: C:\Intune\OpenSSL\Source\"
+Write-Host "2. Create Install-OpenSSL.ps1 in: C:\Intune\OpenSSL\Source\"
+Write-Host "3. Run packaging command from: C:\Intune\OpenSSL\Tools\"
