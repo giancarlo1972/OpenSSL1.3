@@ -1,0 +1,62 @@
+# 1 - Download OpenSSL 3.6.1 (latest stable) from FireDaemon
+$OpenSSLUrl = "https://download.firedaemon.com/FireDaemon-OpenSSL/FireDaemon-OpenSSL-x64-3.6.1.exe"
+$OutputPath = "C:\Intune\OpenSSL\Source\FireDaemon-OpenSSL-x64-3.6.1.exe"
+
+Invoke-WebRequest -Uri $OpenSSLUrl -OutFile $OutputPath
+
+# Verify the download
+if (Test-Path $OutputPath) {
+    Write-Host "OpenSSL installer downloaded successfully" -ForegroundColor Green
+    Get-Item $OutputPath | Select-Object Name, Length
+}
+
+
+
+
+# Option 2
+$OpenSSLUrl = "https://download.firedaemon.com/FireDaemon-OpenSSL/FireDaemon-OpenSSL-x64-3.5.5.exe"
+$OutputPath = "C:\Intune\OpenSSL\Source\FireDaemon-OpenSSL-x64-3.5.5.exe"
+
+Invoke-WebRequest -Uri $OpenSSLUrl -OutFile $OutputPath
+
+
+# Option 3
+# Download from Shining Light Productions
+$OpenSSLUrl = "https://slproweb.com/download/Win64OpenSSL-3_4_0.exe"
+$OutputPath = "C:\Intune\OpenSSL\Source\Win64OpenSSL-3_4_0.exe"
+
+Invoke-WebRequest -Uri $OpenSSLUrl -OutFile $OutputPath
+
+if (Test-Path $OutputPath) {
+    Write-Host "OpenSSL downloaded successfully" -ForegroundColor Green
+    Get-Item $OutputPath | Select-Object Name, Length
+}
+
+
+
+# Option 4 - If fails 
+
+If automated download continues to fail, manually download the installer:
+
+Visit: 
+https://www.firedaemon.com/download-firedaemon-openssl
+​
+
+Click on OpenSSL 3.6.1 EXE Installer x64 or OpenSSL 3.5.5 LTS EXE Installer x64
+​
+
+Save to C:\Intune\OpenSSL\Source\
+
+Or from Shining Light:
+
+Visit: 
+https://slproweb.com/products/Win32OpenSSL.html
+​
+
+Download Win64 OpenSSL v3.4.0 (or latest version)
+
+Save to C:\Intune\OpenSSL\Source\
+
+
+
+
