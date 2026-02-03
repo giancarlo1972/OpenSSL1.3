@@ -1,0 +1,7 @@
+cd C:\Intune\OpenSSL\Source
+
+# For FireDaemon installer:
+.\FireDaemon-OpenSSL-x64-3.6.1.exe /exenoui /exelog test.log /qn /norestart REBOOT=ReallySuppress
+
+# For Shining Light installer:
+.\Win64OpenSSL-3_4_0.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
